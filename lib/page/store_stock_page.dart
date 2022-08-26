@@ -136,6 +136,9 @@ class _StoreStockPageState extends State<StoreStockPage> {
         if (skuQueryResult.data!=null&&skuQueryResult.data!.stock! <= 0) {
           setState(() {
             storeStocks[index].stock = "${skuQueryResult.data?.stock}";
+            if("-1"==storeStocks[index].stock){
+              storeStocks[index].stock = "0";//避免-1 让用户因为是1
+            }
             refreshQueryState(index);
           });
 

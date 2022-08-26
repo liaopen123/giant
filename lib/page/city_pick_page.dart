@@ -42,12 +42,12 @@ class _CityPickPagerState extends State<CityPickPager> {
             SizedBox(height: 40),
             Icon(Icons.directions_bike),
             SizedBox(height: 22),
-            Text(
-              '选择城市',
+            const Text(
+              '选择城市(省市区三级都需要点一下才行。不想改代码了QAQ)',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF262626),
+                color: Color(0xFF262626),
               ),
 
             ),

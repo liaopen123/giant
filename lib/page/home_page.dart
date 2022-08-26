@@ -1,13 +1,7 @@
-import 'package:audioplayers/audioplayers.dart';
-import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:convert' as convert;
 
-import 'package:giant/data/store_json.dart';
 import 'package:giant/entity/query_bean.dart';
-import 'package:giant/entity/stock.dart';
-import 'package:giant/entity/store_list.dart';
 import 'package:giant/entity/city_list.dart' as city;
 import 'package:giant/page/city_pick_page.dart';
 import 'package:giant/page/store_stock_page.dart';
@@ -196,51 +190,4 @@ class _HomePageState extends State<HomePage> {
       );
 
 
-
-  void getHttp() async {
-    Map<String, dynamic> date =convert.jsonDecode(storeJson);
-    var storeList = StoreList.fromJson(date);
-    // storeList.data?.forEach((element) {
-    //   element.code;
-    // });
-    if (index>=storeList.data!.length) {
-      index = 0;
-    }
-    var store = storeList.data?[index];
-    try {
-      dio.FormData formData = dio.FormData.fromMap({"sku": skuController.text, "shopno": store?.code,"user_id":userIdController.text});
-      var response = await dio.Dio().post('https://e-gw.giant.com.cn/index.php/api/sku_stock',data: formData);
-      Map<String, dynamic> date =convert.jsonDecode(response.data.toString());
-      var skuQueryResult = Stock.fromJson(date);
-      if (skuQueryResult.data!.stock!<=0) {
-        setState(() {
-          result = "${store?.name} 的库存为 ${skuQueryResult.data?.stock}";
-        });
-        Future.delayed(const Duration(seconds: 10),(){
-          index++;
-        getHttp();
-        });
-      }else{
-        final player = AudioPlayer();
-        await player.setSource(AssetSource('sound/alert.mp3'));
-        await player.setReleaseMode(ReleaseMode.loop);
-        setState(() {
-          if(dingTalkController.text.isNotEmpty){
-            sendDingTalk(store?.name);
-          }
-          result = "${store?.name} 有库存 有货了 快去！！！！";
-        });
-      }
-
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  void sendDingTalk(String? name) async {
-
-    // var response = await Dio().post('https://oapi.dingtalk.com/robot/send?access_token=e10ba48f160cda537aff57e556f1fbca0588e61c079593d75590f1bf7a6fff05',data: {"msgtype": "text","text": {"content":"${name}终于有货了，快去！！抢到了"}});
-    var response = await dio.Dio().post('https://oapi.dingtalk.com/robot/send?access_token=${dingTalkController.text}',data: {"msgtype": "text","text": {"content":"${name}终于有货了，快去！！抢到了"}});
-    print(response.data.toString());
-  }
 }
