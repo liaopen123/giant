@@ -1,6 +1,8 @@
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as dio;
 import 'dart:convert' as convert;
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:getwidget/components/dropdown/gf_dropdown.dart';
 
 import '../entity/city_list.dart';
@@ -16,7 +18,7 @@ class _CityPickPagerState extends State<CityPickPager> {
   late String provinceName = "";
   late String cityName = "";
   late String areaName = "";
-
+  Data? currentAreaInfo;
   List<Data>? provinceList;
   List<Data>? cityList;
   List<Data>? areaList;
@@ -158,7 +160,7 @@ class _CityPickPagerState extends State<CityPickPager> {
             onChanged: (newValue) {
               setState(() {
                 areaName = newValue.toString();
-                getStoreInfo();
+                setCurrentArea();
               });
             },
             items: areaNameList
@@ -176,8 +178,12 @@ class _CityPickPagerState extends State<CityPickPager> {
       ElevatedButton(
         onPressed: () {
           // GetIt.I.get<NavigationService>().back();
+          if(currentAreaInfo==null){
+            Get.snackbar('Hi', '请选择区');
 
-          //getHttp();
+          }else {
+            Get.back(result: currentAreaInfo);
+          }
         },
         style: ElevatedButton.styleFrom(
           primary: isTransparent ? Colors.transparent : const Color(0xFF0043CE),
@@ -198,8 +204,8 @@ class _CityPickPagerState extends State<CityPickPager> {
       );
 
   void getCountryInfo(String action, Data? cityInfo) async {
-    FormData formData = FormData.fromMap({"action": action, "code": cityInfo?.code??""});
-    var response = await Dio().post(
+    dio.FormData formData = dio.FormData.fromMap({"action": action, "code": cityInfo?.code??""});
+    var response = await dio.Dio().post(
         'https://e-gw.giant.com.cn/index.php/api/get_base_area',
         data: formData);
     Map<String, dynamic> date = convert.jsonDecode(response.data.toString());
@@ -233,6 +239,7 @@ class _CityPickPagerState extends State<CityPickPager> {
        for (var element in areaList ?? []) {
          if (element.name==areaList![0].name) {
            areaName = element.name;
+           currentAreaInfo = element;
          }
          areaNameList.add(element.name ?? "");
        }
@@ -253,7 +260,9 @@ class _CityPickPagerState extends State<CityPickPager> {
     getCountryInfo("3", cityInfo);
   }
 
-  void getStoreInfo() {
+  void setCurrentArea() {
+    currentAreaInfo =
+    areaList?.firstWhere((element) => element.name == areaName);
 
   }
 }

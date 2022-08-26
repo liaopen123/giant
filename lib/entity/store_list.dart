@@ -71,8 +71,8 @@ class Data {
       String? tel2, 
       String? proName, 
       String? cityName, 
-      String? areaName, 
-      num? distance,}){
+      String? areaName,
+    String? distance,}){
     _name = name;
     _code = code;
     _long = long;
@@ -83,7 +83,6 @@ class Data {
     _proName = proName;
     _cityName = cityName;
     _areaName = areaName;
-    _distance = distance;
 }
 
   Data.fromJson(dynamic json) {
@@ -97,7 +96,6 @@ class Data {
     _proName = json['pro_name'];
     _cityName = json['city_name'];
     _areaName = json['area_name'];
-    _distance = json['distance'];
   }
   String? _name;
   String? _code;
@@ -109,7 +107,6 @@ class Data {
   String? _proName;
   String? _cityName;
   String? _areaName;
-  num? _distance;
 Data copyWith({  String? name,
   String? code,
   String? long,
@@ -120,7 +117,6 @@ Data copyWith({  String? name,
   String? proName,
   String? cityName,
   String? areaName,
-  num? distance,
 }) => Data(  name: name ?? _name,
   code: code ?? _code,
   long: long ?? _long,
@@ -131,7 +127,6 @@ Data copyWith({  String? name,
   proName: proName ?? _proName,
   cityName: cityName ?? _cityName,
   areaName: areaName ?? _areaName,
-  distance: distance ?? _distance,
 );
   String? get name => _name;
   String? get code => _code;
@@ -143,7 +138,6 @@ Data copyWith({  String? name,
   String? get proName => _proName;
   String? get cityName => _cityName;
   String? get areaName => _areaName;
-  num? get distance => _distance;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -157,7 +151,6 @@ Data copyWith({  String? name,
     map['pro_name'] = _proName;
     map['city_name'] = _cityName;
     map['area_name'] = _areaName;
-    map['distance'] = _distance;
     return map;
   }
 

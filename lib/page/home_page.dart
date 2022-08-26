@@ -1,11 +1,16 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'dart:convert' as convert;
 
 import 'package:giant/data/store_json.dart';
+import 'package:giant/entity/query_bean.dart';
 import 'package:giant/entity/stock.dart';
 import 'package:giant/entity/store_list.dart';
+import 'package:giant/entity/city_list.dart' as city;
+import 'package:giant/page/city_pick_page.dart';
+import 'package:giant/page/store_stock_page.dart';
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -17,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   var skuController = TextEditingController();
   var userIdController = TextEditingController();
   var dingTalkController = TextEditingController();
+  city.Data? currentAreaInfo;
   var result = "";
   var btnState = "开始查询";
   int index = 0;
@@ -35,11 +41,15 @@ class _HomePageState extends State<HomePage> {
                 Icon(Icons.directions_bike),
                 SizedBox(height: 22),
                 InkWell(
-                  onTap: (){
+                  onTap: () async{
+                 var data = await  Get.to(const CityPickPager());
+                   currentAreaInfo =data;
+                 setState(() {
+                 });
 
                   },
                   child: Text(
-                    '北京市',
+                    currentAreaInfo?.name??'北京市',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
@@ -101,8 +111,7 @@ class _HomePageState extends State<HomePage> {
       ElevatedButton(
         onPressed: () {
           // GetIt.I.get<NavigationService>().back();
-          btnState = "正在查询...";
-          getHttp();
+          Get.to(StoreStockPage(), arguments: QueryBean(currentAreaInfo,userIdController.text,skuController.text,dingTalkController.text));//
         },
         style: ElevatedButton.styleFrom(
           primary: isTransparent ? Colors.transparent : const Color(0xFF0043CE),
@@ -199,8 +208,8 @@ class _HomePageState extends State<HomePage> {
     }
     var store = storeList.data?[index];
     try {
-      FormData formData = FormData.fromMap({"sku": skuController.text, "shopno": store?.code,"user_id":userIdController.text});
-      var response = await Dio().post('https://e-gw.giant.com.cn/index.php/api/sku_stock',data: formData);
+      dio.FormData formData = dio.FormData.fromMap({"sku": skuController.text, "shopno": store?.code,"user_id":userIdController.text});
+      var response = await dio.Dio().post('https://e-gw.giant.com.cn/index.php/api/sku_stock',data: formData);
       Map<String, dynamic> date =convert.jsonDecode(response.data.toString());
       var skuQueryResult = Stock.fromJson(date);
       if (skuQueryResult.data!.stock!<=0) {
@@ -231,7 +240,7 @@ class _HomePageState extends State<HomePage> {
   void sendDingTalk(String? name) async {
 
     // var response = await Dio().post('https://oapi.dingtalk.com/robot/send?access_token=e10ba48f160cda537aff57e556f1fbca0588e61c079593d75590f1bf7a6fff05',data: {"msgtype": "text","text": {"content":"${name}终于有货了，快去！！抢到了"}});
-    var response = await Dio().post('https://oapi.dingtalk.com/robot/send?access_token=${dingTalkController.text}',data: {"msgtype": "text","text": {"content":"${name}终于有货了，快去！！抢到了"}});
+    var response = await dio.Dio().post('https://oapi.dingtalk.com/robot/send?access_token=${dingTalkController.text}',data: {"msgtype": "text","text": {"content":"${name}终于有货了，快去！！抢到了"}});
     print(response.data.toString());
   }
 }
