@@ -75,13 +75,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 _textField(
-                  hintText: '商品的SKU',
+                  hintText: '商品的sku',
                   prefixIcon:
                   const Icon(Icons.pedal_bike_sharp, color: Color(0xFFA8A8A8)),
                 ),
                 SizedBox(height: 14),
                 _textField1(
-                  hintText: '你的userId',
+                  hintText: '你的user_id',
                   prefixIcon: const Icon(Icons.people_rounded, color: Color(0xFFA8A8A8)),
                 ),
                 SizedBox(height: 14),

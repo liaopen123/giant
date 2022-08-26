@@ -43,7 +43,7 @@ class _CityPickPagerState extends State<CityPickPager> {
             Icon(Icons.directions_bike),
             SizedBox(height: 22),
             const Text(
-              '选择城市(省市区三级都需要点一下才行。不想改代码了QAQ)',
+              '选择城市(省市区三级都需要点一下再确认。不想改代码了QAQ)',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
@@ -64,11 +64,14 @@ class _CityPickPagerState extends State<CityPickPager> {
 
   Widget _provinceSelector() {
     if (provinceList == null) {
-      return Container(
-        height: 50,
-        width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.all(20),
-        child: CircularProgressIndicator(),
+      return Center(
+        child: SizedBox(
+          height: 22,
+          width: 22,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+          ),
+        ),
       );
     } else {
       return Container(
