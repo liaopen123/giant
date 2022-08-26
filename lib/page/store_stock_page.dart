@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import 'package:giant/entity/stock.dart';
 import 'package:giant/entity/store_list.dart';
 import 'package:giant/entity/city_list.dart' as city;
 
+import '../entity/CommonData.dart';
 import '../entity/store_stock_wrapper.dart';
 
 class StoreStockPage extends StatefulWidget {
@@ -125,28 +128,42 @@ class _StoreStockPageState extends State<StoreStockPage> {
           'https://e-gw.giant.com.cn/index.php/api/sku_stock',
           data: formData);
       Map<String, dynamic> date = convert.jsonDecode(response.data.toString());
-      var skuQueryResult = Stock.fromJson(date);
-      if (skuQueryResult.data!.stock! <= 0) {
-        setState(() {
-          storeStocks[index].stock = "${skuQueryResult.data?.stock}";
-          refreshQueryState(index);
-        });
+      print("stock:${response.data.toString()}");
 
-        Future.delayed(const Duration(seconds: 3), () {
-          index++;
-          getHttp();
-        });
-      } else {
-        final player = AudioPlayer();
-        await player.setSource(AssetSource('sound/alert.mp3'));
-        await player.setReleaseMode(ReleaseMode.loop);
+      var commonData = CommonData.fromJson(date);
+      if(commonData.status==1){
+        var skuQueryResult = Stock.fromJson(date);
+        if (skuQueryResult.data!=null&&skuQueryResult.data!.stock! <= 0) {
+          setState(() {
+            storeStocks[index].stock = "${skuQueryResult.data?.stock}";
+            refreshQueryState(index);
+          });
+
+          Future.delayed(const Duration(seconds: 3), () {
+            index++;
+            getHttp();
+          });
+        } else if(skuQueryResult.data!.stock! > 0){
+          final player = AudioPlayer();
+          await player.setSource(AssetSource('sound/alert.mp3'));
+          await player.setReleaseMode(ReleaseMode.loop);
+          setState(() {
+            if (queryBean.dingTalk.isNotEmpty) {
+              sendDingTalk(store.name);
+            }
+            result = "${store.name} 有库存 有货了 快去！！！！";
+          });
+        }
+      }else{
         setState(() {
           if (queryBean.dingTalk.isNotEmpty) {
-            sendDingTalk(store.name);
+            sendDingTalk(commonData.msg??"");
           }
-          result = "${store.name} 有库存 有货了 快去！！！！";
+          result = commonData.msg??"";
         });
       }
+
+
     } catch (e) {
       print(e);
     }
