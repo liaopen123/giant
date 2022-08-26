@@ -157,7 +157,7 @@ class _StoreStockPageState extends State<StoreStockPage> {
       }else{
         setState(() {
           if (queryBean.dingTalk.isNotEmpty) {
-            sendDingTalk(commonData.msg??"");
+            sendDingTalk("${commonData.msg??""},还没");
           }
           result = commonData.msg??"";
         });
@@ -174,7 +174,7 @@ class _StoreStockPageState extends State<StoreStockPage> {
         'https://oapi.dingtalk.com/robot/send?access_token=${queryBean.dingTalk}',
         data: {
           "msgtype": "text",
-          "text": {"content": "$name终于有货了，快去！！抢到了"}
+          "text": {"content": "$name有货了，快去！！"}
         });
     print(response.data.toString());
   }
